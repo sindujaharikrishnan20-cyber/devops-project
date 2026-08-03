@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: devops-app
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: devops-app
+
+  template:
+
+    metadata:
+      labels:
+        app: devops-app
+
+    spec:
+
+      imagePullSecrets:
+      - name: ecr-secret
+
+      containers:
+
+      - name: nginx-container
+
+        image: 940348258780.dkr.ecr.us-east-1.amazonaws.com/devops-project:latest
+
+        imagePullPolicy: Always
+
+        ports:
+
+        - containerPort: 80

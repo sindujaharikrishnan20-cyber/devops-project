@@ -2,10 +2,12 @@ pipeline {
 
     agent any
 
+
     options {
         skipDefaultCheckout(true)
-        timeout(time: 15, unit: 'MINUTES')
+        timeout(time: 20, unit: 'MINUTES')
     }
+
 
     environment {
 
@@ -17,7 +19,6 @@ pipeline {
 
         IMAGE_TAG = "latest"
 
-        CONTAINER_NAME = "devops-app"
     }
 
 
@@ -35,19 +36,23 @@ pipeline {
         }
 
 
+
         stage('Docker Build') {
 
             steps {
 
                 sh '''
+                
                 cd app
-
+                
                 docker build \
                 -t ${IMAGE_NAME}:${IMAGE_TAG} .
+
                 '''
 
             }
         }
+
 
 
         stage('ECR Login') {
@@ -102,19 +107,23 @@ pipeline {
 
 
 
-        stage('Deploy Container Test') {
+        stage('Deploy To Kubernetes') {
 
             steps {
 
                 sh '''
 
-                docker rm -f ${CONTAINER_NAME} || true
+                kubectl apply -f kubernetes/deployment.yaml
+
+                kubectl apply -f kubernetes/service.yaml
 
 
-                docker run -d \
-                --name ${CONTAINER_NAME} \
-                -p 8090:80 \
-                ${IMAGE_NAME}:${IMAGE_TAG}
+                kubectl rollout restart deployment devops-app
+
+
+                kubectl get pods
+
+                kubectl get svc
 
                 '''
 
@@ -123,15 +132,13 @@ pipeline {
 
 
 
-        stage('Verify') {
+        stage('Verify Deployment') {
 
             steps {
 
                 sh '''
 
-                docker images
-
-                docker ps
+                kubectl rollout status deployment/devops-app
 
                 '''
 
@@ -144,16 +151,19 @@ pipeline {
 
     post {
 
+
         success {
 
-            echo "CI/CD Pipeline Completed Successfully"
+            echo "================================="
+            echo " CI/CD Deployment Successful "
+            echo "================================="
 
         }
 
 
         failure {
 
-            echo "Pipeline Failed - Check Console Output"
+            echo "Deployment Failed - Check Logs"
 
         }
 
