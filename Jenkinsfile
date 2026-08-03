@@ -11,7 +11,7 @@ pipeline {
 
         AWS_REGION = "us-east-1"
 
-        ECR_REPO = "123456789012.dkr.ecr.us-east-1.amazonaws.com/devops-project"
+        ECR_REPO = "940348258780.dkr.ecr.us-east-1.amazonaws.com/devops-project"
 
         IMAGE_NAME = "devops-project"
 
