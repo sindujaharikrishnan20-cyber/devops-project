@@ -2,11 +2,15 @@ pipeline {
 
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+        timeout(time: 15, unit: 'MINUTES')
+    }
+
     environment {
 
         AWS_REGION = "us-east-1"
 
-        // Replace with your ECR repository URL
         ECR_REPO = "123456789012.dkr.ecr.us-east-1.amazonaws.com/devops-project"
 
         IMAGE_NAME = "devops-project"
@@ -24,11 +28,11 @@ pipeline {
 
             steps {
 
-                echo "Code checked out from GitHub"
+                git branch: 'main',
+                    url: 'https://github.com/sindujaharikrishnan20-cyber/devops-project.git'
 
             }
         }
-
 
 
         stage('Docker Build') {
@@ -44,7 +48,6 @@ pipeline {
 
             }
         }
-
 
 
         stage('ECR Login') {
@@ -83,7 +86,7 @@ pipeline {
 
 
 
-        stage('Push Image to ECR') {
+        stage('Push Image To ECR') {
 
             steps {
 
@@ -99,7 +102,7 @@ pipeline {
 
 
 
-        stage('Run Container Test') {
+        stage('Deploy Container Test') {
 
             steps {
 
@@ -135,23 +138,22 @@ pipeline {
             }
         }
 
-
     }
+
 
 
     post {
 
-
         success {
 
-            echo "Deployment Successful"
+            echo "CI/CD Pipeline Completed Successfully"
 
         }
 
 
         failure {
 
-            echo "Pipeline Failed - Check Logs"
+            echo "Pipeline Failed - Check Console Output"
 
         }
 
