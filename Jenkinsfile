@@ -5,7 +5,7 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git 'https://github.com/sindujaharikrishnan20-cyber/devops-project.git'
+                url 'https://github.com/sindujaharikrishnan20-cyber/devops-project.git'
             }
         }
 
